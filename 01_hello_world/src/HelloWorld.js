@@ -4,7 +4,7 @@ const HelloWorld = (props) => {
         name = props.name;
     }
     return (
-        <h2>Hello {name}</h2>
+        <h2>Hello {name}!</h2>
     );
 };
 
