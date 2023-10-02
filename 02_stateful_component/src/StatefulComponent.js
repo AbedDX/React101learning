@@ -20,5 +20,4 @@ const StatefulComponent = (props) => {
         <h2>{state.seconds} seconds since you entered the page</h2>
     );
 }
-
 export default StatefulComponent;
