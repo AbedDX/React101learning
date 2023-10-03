@@ -1,7 +1,8 @@
 import logo from './logo.svg';
+import { useState } from 'react';
 import './App.css';
-import {useState} from 'react';
-import './App.css';
+import ContactForm from './components/ContactForms';
+import ContactList from './components/ContactList';
 
 function App() {
 
@@ -14,8 +15,7 @@ function App() {
     setState((state) => {
       contact.id = state.id;
       return {
-        list: state.list.concat(contact),
-        id: state.id + 1
+        list: state.list.concat(contact), id: state.id + 1
       }
     })
   }
@@ -32,7 +32,10 @@ function App() {
 
   return (
     <div className="App">
-
+      <ContactForm addContact={addContact} />
+      <img style={{ width: 200, height: 200 }} src={logo} alt="Logo"></img>
+      <hr />
+      <ContactList removeContact={removeContact} list={state.list} />
     </div>
   );
 }
