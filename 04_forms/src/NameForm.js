@@ -24,22 +24,22 @@ const NameForm = (props) => {
 
 return(
     <form onSubmit={onSubmit}>
-        <label htmlFor="firstname">First Name</label>
+        <label htmlFor="firstname">First Name: </label>
         <input type="text"
         name="firstname"
         id="firstname"
         onChange={onChange}
         value={StaticRange.firstname}/>
         <br/>
-        <label htmlFor="lastname">Last Name</label>
+        <label htmlFor="lastname">Last Name: </label>
         <input type="text"
         name="lastname"
         id="lastname"
         onChange={onChange}
         value={StaticRange.lastname}/>
         <br/>
-        <input type="submit" value={onSubmit}>Submit</input>
+        <button type="submit" value={onSubmit}>Submit</button>
     </form>
     )
 }
-export default NameForm
+export default NameForm;
