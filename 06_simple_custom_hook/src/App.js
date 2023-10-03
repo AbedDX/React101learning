@@ -13,6 +13,8 @@ function App() {
       <button onClick={subtract}>-</button>
       <br/>
       <img style={{ width: 200, height: 200 }} src={logo} alt="Logo"></img>
+      <br/>
+      <p>"I had the opportunity to learn something new about React hooks today."</p>
     </div>
   );
 }
