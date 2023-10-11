@@ -4,6 +4,7 @@ import {useState,useEffect} from 'react';
 import ShoppingForm from './components/ShoppingForm';
 import ShoppingList from './components/ShoppingList';
 import Navbar from './components/Navbar';
+import LoginPage from './components/LoginPage';
 import {Route,Routes,Navigate} from 'react-router-dom';
 
 function App() {
@@ -80,9 +81,11 @@ function App() {
 			if(!urlRequest.url) {
 				return;
 			}
+			setLoading(true);
 			const response = await fetch(urlRequest.url,urlRequest.request)
+			setLoading(false);
 			if(!response) {
-				console.log("Server did not respond!");
+				setError("Server never responded. Try again later.");
 				return;
 			}
 			if(response.ok) {
@@ -90,11 +93,16 @@ function App() {
 					case "getlist":
 						const data = await response.json();
 						if(!data) {
-							console.log("Failed to parse shopping data");
+							setError("Failed to parse shopping data");
 							return;
 						}
-						setState({
-							list:data
+						setState((state) => {
+							let tempState = {
+								...state,
+								list:data
+							}
+							saveToStorage(tempState);
+							return tempState;
 						})
 						return;
 					case "additem":
@@ -102,22 +110,63 @@ function App() {
 					case "edititem":
 						getList();
 						return;
+					case "register":
+						setError("Register success");
+						return;
+					case "login":
+						const temp = await response.json();
+						if(!temp) {
+							setError("Failed to parse login information. Try again later.");
+							return;
+						}
+						setState((state) => {
+							let tempState = {
+								...state,
+								isLogged:true,
+								token:temp.token
+							}
+							saveToStorage(tempState);
+							return tempState;
+						})
+						getList(temp.token);
+						return;
+					case "logout":
+						clearState("");
+						return;
 					default:
 						return;
 				}
 			} else {
+				if(response.status === 403) {
+					clearState("Your session has expired. Logging you out.")
+					return;
+				}
+				let errorMessage = " Server responded with a status "+response.status+" "+response.statusText
 				switch(urlRequest.action) {
 					case "getlist":
-						console.log("Failed to fetch shopping list. Server responded with a status "+response.status+" "+response.statusText)
+						setError("Failed to fetch shopping list. Server responded with a status "+response.status+" "+response.statusText)
 						return;
 					case "additem":
-						console.log("Failed to add new item. Server responded with a status "+response.status+" "+response.statusText)
+						setError("Failed to add new item. Server responded with a status "+response.status+" "+response.statusText)
 						return;
 					case "removeitem":
-						console.log("Failed to remove item. Server responded with a status "+response.status+" "+response.statusText)
+						setError("Failed to remove item. Server responded with a status "+response.status+" "+response.statusText)
 						return;
 					case "edititem":
-						console.log("Failed to edit item. Server responded with a status "+response.status+" "+response.statusText)
+						setError("Failed to edit item. Server responded with a status "+response.status+" "+response.statusText)
+						return;
+					case "register":
+						if(response.status === 409) {
+							setError("Username is already in use");
+							return;
+						}
+						setError("Register failed."+errorMessage);
+						return;
+					case "login":
+						setError("Login failed."+errorMessage);
+						return;
+					case "logout":
+						clearState("Server responded with an error. Logging you out.");
 						return;
 					default:
 						return;
@@ -201,16 +250,89 @@ function App() {
 		})
 	}
 	
-	return (
-		<div className="App">
-			<Navbar/>
-			<Routes>
-				<Route path="/" element={<ShoppingList list={state.list} removeItem={removeItem} editItem={editItem}/>}/>
-				<Route path="/form" element={<ShoppingForm addItem={addItem}/>}/>
-				<Route path="*" element={<Navigate to="/"/>}/>
-			</Routes>
-		</div>
-	);
+	//LOGIN API
+	
+	const register = (user) => {
+		setUrlRequest({
+			url:"/register",
+			request:{
+				method:"POST",
+				headers:{
+					"Content-type":"application/json"
+				},
+				body:JSON.stringify(user)
+			},
+			action:"register"
+		})
+	}
+
+	const login = (user) => {
+		setUser(user.username);
+		setUrlRequest({
+			url:"/login",
+			request:{
+				method:"POST",
+				headers:{
+					"Content-type":"application/json"
+				},
+				body:JSON.stringify(user)
+			},
+			action:"login"
+		})
+	}
+
+	const logout = () => {
+		setUrlRequest({
+			url:"/logout",
+			request:{
+				method:"POST",
+				headers:{
+					"Content-type":"application/json",
+					"token":state.token
+				}
+			},
+			action:"logout"
+		})
+	}
+	
+	//RENDERING
+	
+	let message = <></>
+	if(state.loading) {
+		message = <h4>Loading...</h4>
+	}
+	if(state.error) {
+		message = <h4>{state.error}</h4>
+	}
+	if(state.isLogged) {
+		return (
+			<div className="App">
+				<Navbar token={state.token} user={state.user} isLogged={state.isLogged} logout={logout}/>
+				<div style={{height:35,textAlign:"center"}}>
+					{message}
+				</div>
+				<Routes>
+					<Route path="/" element={<ShoppingList list={state.list} removeItem={removeItem} editItem={editItem}/>}/>
+					<Route path="/form" element={<ShoppingForm addItem={addItem}/>}/>
+					<Route path="*" element={<Navigate to="/"/>}/>
+				</Routes>
+			</div>
+		);
+	} else {
+		return (
+			<div className="App">
+				<Navbar token={state.token} user={state.user} isLogged={state.isLogged} logout={logout}/>
+				<div style={{height:35,textAlign:"center"}}>
+					{message}
+				</div>
+				<Routes>
+					<Route path="/" element={<LoginPage register={register} login={login} setError={setError}/>}/>
+					<Route path="*" element={<Navigate to="/"/>}/>
+				</Routes>
+			</div>
+		);		
+		
+	}
 }
 
 export default App;
