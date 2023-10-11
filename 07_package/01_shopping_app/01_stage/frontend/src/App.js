@@ -3,9 +3,8 @@ import './App.css';
 import {useState,useEffect} from 'react';
 import ShoppingForm from './components/ShoppingForm';
 import ShoppingList from './components/ShoppingList';
-import Row from './components/Row';
-import RemoveRow from './components/RemoveRow';
-import EditRow from './components/EditRow';
+import Navbar from './components/Navbar';
+import { Route,Routes,Navigate } from 'react-router-dom';
 
 function App() {
 	
@@ -46,6 +45,7 @@ function App() {
 					case "removeitem":
 					case "edititem":
 						getList();
+						return;
 					default:
 						return;
 				}
@@ -72,6 +72,9 @@ function App() {
 		fetchData();
 		
 	},[urlRequest])
+	useEffect(() => {
+	 getList();
+	},[])
 	
 	//REST API
 	
@@ -122,10 +125,15 @@ function App() {
 			action:"edititem"
 		})
 	}
-	
 	return (
 		<div className="App">
-			<ShoppingForm addItem={addItem}/>
+			<Navbar/>
+			<Routes>
+				<Route path="/" element={<ShoppingList list={state.list} removeItem={removeItem} editItem={editItem}/>}/>
+				<Route path="/form" element={<ShoppingForm addItem={addItem}/>}/>
+				<Route path="*" element={<Navigate to="/"/>}/>
+			</Routes>
+			
 		</div>
 	);
 }
