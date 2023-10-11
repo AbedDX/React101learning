@@ -23,22 +23,26 @@ const createToken = () => {
 	let token = crypto.randomBytes(64);
 	return token.toString("hex");
 }
+
 const isUserLogged = (req,res,next) => {
-	if (!req.header.token) {
-		return res.status(403).json({"Messange":"Forbindden"});
+	if(!req.headers.token) {
+		return res.status(403).json({"Message":"Forbidden"});
 	}
 	for(let i=0;i<loggedSessions.length;i++) {
-		let.now = Date.now();
-		if(now >loggedSessions[i].tll) {
-			loggedSessions.splice(i,1);
-			return res.status(403).json({"Messange":"Forbindden"});
-		}else{
-			loggedSessions[i].tll = now+time_to_live_diff;
-			req.session =  {};
-			req.session.user = loggedSessions[i].user;
-			return next();
-		}
+		if(req.headers.token === loggedSessions[i].token) {
+			let now = Date.now();
+			if(now > loggedSessions[i].ttl) {
+				loggedSessions.splice(i,1);
+				return res.status(403).json({"Message":"Forbidden"});
+			} else {
+				loggedSessions[i].ttl = now+time_to_live_diff;
+				req.session = {};
+				req.session.user = loggedSessions[i].user;
+				return next();
+			}
+		} 
 	}
+	return res.status(403).json({"Message":"Forbidden"});
 }
 
 //LOGIN API
@@ -108,20 +112,21 @@ app.post("/login",function(req,res) {
 	}
 	return res.status(401).json({"Message":"Unauthorized"});
 })
-app.post("logout",function(req,res) {
-	if(!req.header.token) {
-		return res.status(404).json({"Messege":"Not found"});
+
+app.post("/logout",function(req,res) {
+	if(!req.headers.token) {
+		return res.status(404).json({"Message":"Not found"});
 	}
-	for(let i=0;i<loggedSessions.length;[i++]) {
+	for(let i=0;i<loggedSessions.length;i++) {
 		if(req.headers.token === loggedSessions[i].token) {
 			loggedSessions.splice(i,1);
 			return res.status(200).json({"Message":"Logged out"});
 		}
 	}
-	return res.status(404).json({"Messege":"Not found"});
+	return res.status(404).json({"Message":"Not found"});
 })
 
-app.use("/api",shoppingroute);
+app.use("/api",isUserLogged,shoppingroute);
 
 console.log("Running in port",port);
 
