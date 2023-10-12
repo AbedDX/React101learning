@@ -12,7 +12,7 @@ const Navbar = (props) => {
 					<li className="nav-item" style={{marginLeft:10}}>
 						<Link className="nav-link" to="/form">Add new item</Link>
 					</li>
-					<li className="nav-item" style={{marginLeft:10}}>
+					<li className="nav-item" style={{marginLeft:10, padding:10}}>
 						<p style={{color:"blue"}}>Logged in as {props.user}</p>
 					</li>
 					<li className="nav-item" style={{marginLeft:10}}>

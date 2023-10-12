@@ -1,0 +1,11 @@
+{
+  "name": "08_mongodb",
+  "version": "1.0.0",
+  "description": "testing mongodb",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Abed",
+  "license": "MIT"
+}
