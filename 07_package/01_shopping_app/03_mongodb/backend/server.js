@@ -5,7 +5,7 @@ const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 const userModel = require("./models/user");
 const sessionModel = require("./models/session");
-require('dotenv').config();
+const dotenv = require('dotenv').config();
 
 let app = express();
 
