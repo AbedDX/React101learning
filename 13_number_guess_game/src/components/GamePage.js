@@ -1,40 +1,40 @@
 import useGame from '../hooks/useGame';
 import {useState} from 'react';
 
-const StartPage = (props) => {
+const GamePage = (props) => {
 	
 	const [state,setState] = useState({
-		name:""
+		guess:0
 	})
 	
-	const {startGame,message} = useGame();
+	const {guess,message} = useGame();
 	
 	const onChange = (event) => {
 		setState({
-			name:event.target.value
+			guess:event.target.value
 		})
 	}
 	
 	const onSubmit = (event) => {
 		event.preventDefault();
-		startGame(state.name);
+		guess(state.guess);
 	}
 	
 	return(
 		<div style={{margin:"auto"}}>
 			<form onSubmit={onSubmit}>
-				<label htmlFor="name">Player name</label>
-				<input type="text"
-						name="name"
-						id="name"
+				<label htmlFor="guess">Guess a number</label>
+				<input type="number"
+						name="guess"
+						id="guess"
 						onChange={onChange}
-						value={state.name}/>
+						value={state.guess}/>
 				<br/>
-				<input type="submit" value="Start"/>
+				<input type="submit" value="Guess"/>
 			</form>
 			<h3>{message}</h3>
 		</div>
 	)
 }
 
-export default StartPage;
+export default GamePage;
