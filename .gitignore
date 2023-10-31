@@ -1,24 +1,24 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# Node.js
+node_modules/
 
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
+# Virtual environment (Python)
+venv/
+env/
 
-# testing
-/coverage
+# IDE or text editor specific files
+.idea/
+.vscode/
 
-# production
-/build
+# Compiled Python files
+*.pyc
+*.pyo
+__pycache__/
 
-# misc
-.DS_Store
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# Log files
+*.log
+
+# Database
+*.db
+
+# Local configuration files
 .env
-
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
