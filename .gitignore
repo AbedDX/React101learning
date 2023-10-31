@@ -12,7 +12,6 @@ env/
 # Compiled Python files
 *.pyc
 *.pyo
-__pycache__/
 
 # Log files
 *.log
