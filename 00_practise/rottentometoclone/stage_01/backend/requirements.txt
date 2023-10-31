@@ -1,0 +1,6 @@
+Flask
+Flask-PyMongo
+bson
+Flask-Cors
+python-dotenv
+Werkzeug
