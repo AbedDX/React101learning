@@ -5,9 +5,9 @@ import { Card, Rating, Image } from "semantic-ui-react";
 
 export const Movies = ({ movies }) => {
   return (
-    <Card.Group itemsPerRow={4}>
+    <Card.Group itemsPerRow={5}>
       {movies.map((movie) => (
-        <Card key={movie.id}>
+        <Card key={`${movie.title}-${movie.id}`}>
           <Image
               src="images/imgholder.jpg" 
               className ="Banner" 
