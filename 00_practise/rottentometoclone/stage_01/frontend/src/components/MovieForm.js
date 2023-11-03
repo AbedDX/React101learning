@@ -43,9 +43,7 @@ export const MovieForm = ({ onNewMovie }) => {
               setRating(1);
             }
           }}
-        >
-          submit
-        </Button>
+        >Submit🍅</Button>
       </Form.Field>
     </Form>
   );
