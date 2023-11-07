@@ -3,6 +3,7 @@ import "./App.css";
 import { Movies } from "./components/Movies";
 import { MovieForm } from "./components/MovieForm";
 import { Container } from "semantic-ui-react";
+import Navbar from "./components/Navbar";
 
 function App() {
   const [movies, setMovies] = useState([]);
@@ -16,6 +17,8 @@ function App() {
   }, []);
 
   return (
+    <div>
+      <Navbar/>
     <Container style={{ marginTop: 40 }}>
       <MovieForm
         onNewMovie={movie =>
@@ -24,6 +27,7 @@ function App() {
       />
       <Movies movies={movies} />
     </Container>
+    </div>
   );
 }
 
