@@ -32,15 +32,16 @@ def list_movies():
         movie_list.append({
             "_id": str(movie["_id"]),
             "title": movie["title"],
-            "rating": movie["rating"]
+            "rating": movie["rating"],
+            "youtube": movie["youtube_link"]
         })
 
     return jsonify({"movies": movie_list})
 
 # Delete a movie by its ID
-@movies_api.route("/movies/<string:movie_id>", methods=["DELETE"])
-def delete_movie(movie_id):
-    result = Movie.delete(movie_id)
+@movies_api.route("/movies/<string:movies_id>", methods=["DELETE"])
+def delete_movie(movies_id):
+    result = Movie.delete(movies_id)
     
     if result.deleted_count == 0:
         return jsonify({"error": "Movie not found"}), 404
@@ -48,8 +49,8 @@ def delete_movie(movie_id):
     return jsonify({"message": "Movie deleted successfully"})
 
 # Update an existing movie by its ID
-@movies_api.route("/movies/<string:movie_id>", methods=["PUT"])
-def update_movie(movie_id):
+@movies_api.route("/movies/<string:movies_id>", methods=["PUT"])
+def update_movie(movies_id):
     data = request.json
     title = data.get("title")
     description = data.get("description")
@@ -61,7 +62,7 @@ def update_movie(movie_id):
     if not title or not rating:
         return jsonify({"error": "Missing data"}), 400
 
-    movie = Movie.get_by_id(movie_id)
+    movie = Movie.get_by_id(movies_id)
 
     if not movie:
         return jsonify({"error": "Movie not found"}), 404
@@ -75,24 +76,17 @@ def update_movie(movie_id):
 
     movie.save()
 
-    return jsonify({"message": "Movie updated successfully"}), 200
+    return jsonify({"message": "Movie updated successfully"}, 200)
 
 # New route to fetch YouTube links for movies
-@movies_api.route("/movies/<string:movie_id>/youtube_link", methods=["GET"])
-def get_movie_youtube_link(movie_id):
-    movie = Movie.get_by_id(movie_id)
+@movies_api.route("/movies/<string:movies_id>/youtube_link", methods=["GET"])
+def get_movie_youtube_link(movies_id):
+    movie = Movie.get_movie_by_id(movies_id)
+    print(movies_id)
 
     if not movie:
         return jsonify({"error": "Movie not found"}), 404
 
-    if "youtube_link" not in movie:
-        return jsonify({"error": "YouTube link not available for this movie"}), 404
-
     youtube_link = movie["youtube_link"]
 
     return jsonify({"youtube_link": youtube_link})
-
-
-
-
-

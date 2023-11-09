@@ -1,0 +1,20 @@
+/* Set the background color of the modal frame to black */
+.ui.modal {
+    background-color: black;
+    color: white; /* Set text color to white for better readability */
+    padding: 1px;
+  }
+  
+  /* Set the background color of the modal header to black */
+  .ui.modal .header {
+    background-color: black;
+    color: black; /* Set text color to white for better readability */
+    padding: 1px;
+  }
+  
+  /* Set the background color of the modal content (body) to black */
+  .ui.modal .content {
+    background-color: black;
+    color: white;
+    padding: 1px; 
+  }

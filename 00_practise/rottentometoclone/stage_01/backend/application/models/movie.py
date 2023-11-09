@@ -29,7 +29,7 @@ class Movie:
 
     @staticmethod
     def get_all_movies():
-        movies = list(mongodb.db.movies.find({}, {"_id": 1, "title": 1, "rating": 1, "youtube":1,}))
+        movies = list(mongodb.db.movies.find({}, {"_id": 1, "title": 1, "rating": 1, "youtube_link": 1}))
         return movies
 
     @staticmethod
