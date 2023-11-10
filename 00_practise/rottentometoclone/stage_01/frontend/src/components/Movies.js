@@ -11,7 +11,7 @@ export const Movies = ({ movies }) => {
 
     if (movie.youtube) {
       try {
-        const response = await fetch(`/movies/${movie._id}/youtube_link`);
+        const response = await fetch("/movies/${movie._id}/youtube_link");
         if (response.ok) {
           const data = await response.json();
           setYoutubeLink(data.youtube_link);
@@ -35,7 +35,7 @@ export const Movies = ({ movies }) => {
       {movies.map((movie) => (
         <Card key={movie._id}>
           <Image
-            src="images/imgholder.jpg"
+            src={movie.cloudinary_url || "images/imgholder.jpg"}
             className="Banner"
             alt=""
             style={{ width: "266px", height: "250px" }}
@@ -56,14 +56,13 @@ export const Movies = ({ movies }) => {
         <Modal.Content>
           {youtubeLink && (
             <Embed
-              id={youtubeLink}
-              source="youtube"
-              placeholder="youtube"
-              iframe={{
-                allowFullScreen: true,
-                autoPlay: true
-              }}
-            />
+            id={youtubeLink}
+            source="youtube"
+            iframe={{
+              allowFullScreen: true,
+              autoPlay: true
+            }}
+          />
           )}
         </Modal.Content>
       </Modal>

@@ -13,11 +13,12 @@ def add_movie():
     release_date = data.get("release_date")
     rating = data.get("rating")
     youtube_link = data.get("youtube_link")
+    cloudinary_url = data.get("cloudinary_url")
 
     if not title or not rating:
         return jsonify({"error": "Missing data"}), 400
 
-    new_movie = Movie(title, description, genre, release_date, rating, youtube_link)
+    new_movie = Movie(title, description, genre, release_date, rating, youtube_link, cloudinary_url)
     inserted_id = new_movie.save()
 
     return jsonify({"message": "Movie added successfully", "movie_id": inserted_id}), 201
@@ -33,9 +34,9 @@ def list_movies():
             "_id": str(movie["_id"]),
             "title": movie["title"],
             "rating": movie["rating"],
-            "youtube": movie["youtube_link"]
+            "youtube_link": movie["youtube_link"],
+            "cloudinary_url": movie["cloudinary_url"]
         })
-
     return jsonify({"movies": movie_list})
 
 # Delete a movie by its ID
@@ -58,6 +59,7 @@ def update_movie(movies_id):
     release_date = data.get("release_date")
     rating = data.get("rating")
     youtube_link = data.get("youtube_link")
+    cloudinary_url = data.get("cloudinary_url")
 
     if not title or not rating:
         return jsonify({"error": "Missing data"}), 400
@@ -73,6 +75,7 @@ def update_movie(movies_id):
     movie.release_date = release_date
     movie.rating = rating
     movie.youtube_link = youtube_link
+    movie.cloudinary_url= cloudinary_url
 
     movie.save()
 

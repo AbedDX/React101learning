@@ -1,30 +1,47 @@
-from flask import Flask, Blueprint, jsonify, request
+from flask import Flask, Blueprint
 from flask_pymongo import PyMongo
 from flask_cors import CORS
 from dotenv import load_dotenv
+from cloudinary.uploader import upload
 import os
 
 app = Flask(__name__)
 
 load_dotenv()
 
-SECRET_KEY = os.getenv("SECRET_KEY")
+# Initialize MongoDB
 MONGO_URI = os.getenv("MONGO_URI")
-
-app.config["SECRET_KEY"] = SECRET_KEY
 app.config["MONGO_URI"] = MONGO_URI
 
+# Initialize Cloudinary
+CLOUD_NAME = os.getenv("CLOUD_NAME")
+CLOUD_API_KEY = os.getenv("CLOUD_API_KEY")
+CLOUD_API_SECRET = os.getenv("CLOUD_API_SECRET")
+
+# Check if Cloudinary configuration is set
+if not all([CLOUD_NAME, CLOUD_API_KEY, CLOUD_API_SECRET]):
+    print("Cloudinary configuration is missing. Please check your environment variables.")
+else:
+    # Configure Cloudinary
+    import cloudinary
+    cloudinary.config(
+        cloud_name=CLOUD_NAME,
+        api_key=CLOUD_API_KEY,
+        api_secret=CLOUD_API_SECRET
+    )
+    print("Cloudinary configuration successful.")
+
+# Initialize CORS
 CORS(app)
 
-# setup moggodb
+# Setup MongoDB
 mongodb = PyMongo(app)
-db = mongodb
 
 # Create a connection checker function
 def check_mongo_connection():
     try:
         # Attempt to establish a connection
-        db.cx.server_info()
+        mongodb.cx.server_info()
         return True
     except Exception as e:
         print(f"MongoDB connection error: {e}")
@@ -36,9 +53,9 @@ if check_mongo_connection():
 else:
     print("MongoDB connection failed. Please check your configuration.")
 
+# Import and register your blueprints
 from application.routes import movie_route
-from application.routes import user_route
+#from application.routes import user_route
 
 app.register_blueprint(movie_route.movies_api)
-app.register_blueprint(user_route.user_api)
-
+#app.register_blueprint(user_route.user_api)
