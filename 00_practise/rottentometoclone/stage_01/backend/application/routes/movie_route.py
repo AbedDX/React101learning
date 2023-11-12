@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from application.models.movie import Movie
+from cloudinary.uploader import upload
 
 movies_api = Blueprint("movies", __name__)
 
@@ -34,9 +35,10 @@ def list_movies():
             "_id": str(movie["_id"]),
             "title": movie["title"],
             "rating": movie["rating"],
-            "youtube_link": movie["youtube_link"],
+            "youtube": movie["youtube_link"],
             "cloudinary_url": movie["cloudinary_url"]
         })
+
     return jsonify({"movies": movie_list})
 
 # Delete a movie by its ID
@@ -93,3 +95,13 @@ def get_movie_youtube_link(movies_id):
     youtube_link = movie["youtube_link"]
 
     return jsonify({"youtube_link": youtube_link})
+
+@movies_api.route("/upload", methods=["POST"])
+def upload_image():
+    try:
+        file = request.files["file"]
+        upload_result = upload(file)
+        return jsonify({"cloudinary_url": upload_result["secure_url"]})
+    except Exception as e:
+        print(f"Error during image upload: {e}")
+        return jsonify({"error": "Internal Server Error"}), 500

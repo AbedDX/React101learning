@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
 import { Movies } from "./components/Movies";
-import { MovieForm } from "./components/MovieForm";
-import { Container } from "semantic-ui-react";
+import MovieForm from "./components/MovieForm";
+import { Container, Button } from "semantic-ui-react";
 import Navbar from "./components/Navbar";
 
 function App() {
@@ -16,15 +16,26 @@ function App() {
     );
   }, []);
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+
+
   return (
     <div>
       <Navbar/>
-    <Container style={{ marginTop: 40 }}>
-      <MovieForm
-        onNewMovie={movie =>
-          setMovies(currentMovies => [movie, ...currentMovies])
-        }
-      />
+    <Container style={{ marginTop: "20px" }}>
+    <Button primary onClick={openModal}>
+        Open Movie Form
+      </Button>
+      <MovieForm open={isModalOpen} onClose={closeModal} />
       <Movies movies={movies} />
     </Container>
     </div>

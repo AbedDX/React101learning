@@ -1,4 +1,5 @@
 from application import mongodb
+from cloudinary.uploader import upload
 from bson import ObjectId
 from datetime import datetime
 
@@ -9,12 +10,12 @@ class Movie:
         self.genre = genre
         self.release_date = release_date
         self.rating = rating
-        self.youtube_link= youtube_link
-        self.cloudinary_url=cloudinary_url
+        self.youtube_link = youtube_link
+        self.cloudinary_url = cloudinary_url
         self.created_at = datetime.utcnow()
         self.updated_at = datetime.utcnow()
 
-    def save(self):
+    def save(self, image_file):
         movie_data = {
             "title": self.title,
             "description": self.description,
@@ -27,11 +28,19 @@ class Movie:
             "updated_at": self.updated_at
         }
         result = mongodb.db.movies.insert_one(movie_data)
-        return str(result.inserted_id)  # Return the inserted ObjectId as a string
+        # Upload the image to Cloudinary and update the Cloudinary URL
+        if image_file:
+            cloudinary_response = upload(image_file)
+            cloudinary_url = cloudinary_response['secure_url']
+            movie_data['cloudinary_url'] = cloudinary_url
+            # Update the movie document with the Cloudinary URL
+            mongodb.db.movies.update_one({"_id": result.inserted_id}, {"$set": {"cloudinary_url": cloudinary_url}})
+
+        return str(result.inserted_id)
 
     @staticmethod
     def get_all_movies():
-        movies = list(mongodb.db.movies.find({}, {"_id": 1, "title": 1, "rating": 1, "youtube_link":1, "cloudinary_url":1}))
+        movies = list(mongodb.db.movies.find({}, {"_id": 1, "title": 1, "rating": 1, "youtube_link": 1, "cloudinary_url": 1}))
         return movies
 
     @staticmethod
@@ -46,8 +55,8 @@ class Movie:
             "genre": self.genre,
             "release_date": self.release_date,
             "rating": self.rating,
-            "youtube_link":self.youtube_link,
-            "cloudinary_url":self.cloudinary_url,
+            "youtube_link": self.youtube_link,
+            "cloudinary_url": self.cloudinary_url,  # Added 'cloudinary_url' here
             "updated_at": datetime.utcnow()
         }
         mongodb.db.movies.update_one({"_id": ObjectId(movie_id)}, {"$set": updated_data})
@@ -64,8 +73,8 @@ class Movie:
             "genre": self.genre,
             "release_date": self.release_date,
             "rating": self.rating,
-            "youtube_link":self.youtube_link,
-            "cloudinary_url":self.cloudinary_url,
+            "youtube_link": self.youtube_link,
+            "cloudinary_url": self.cloudinary_url,  # Added 'cloudinary_url' here
             "created_at": self.created_at,
             "updated_at": self.updated_at
         }

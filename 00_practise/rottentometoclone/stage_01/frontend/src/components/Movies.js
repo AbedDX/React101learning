@@ -11,7 +11,7 @@ export const Movies = ({ movies }) => {
 
     if (movie.youtube) {
       try {
-        const response = await fetch("/movies/${movie._id}/youtube_link");
+        const response = await fetch(`/movies/${movie._id}/youtube_link`);
         if (response.ok) {
           const data = await response.json();
           setYoutubeLink(data.youtube_link);
@@ -53,16 +53,17 @@ export const Movies = ({ movies }) => {
       ))}
 
       <Modal open={modalOpen} onClose={closeModal} size="small" closeIcon>
-        <Modal.Content>
+        <Modal.Content >
           {youtubeLink && (
-            <Embed
-            id={youtubeLink}
-            source="youtube"
-            iframe={{
-              allowFullScreen: true,
-              autoPlay: true
-            }}
-          />
+              <Embed
+                id={youtubeLink}
+                source="youtube"
+                style={{backgroundColor: 'black' }}
+                iframe={{
+                  allowFullScreen: true,
+                  autoPlay:true
+                }}
+              />
           )}
         </Modal.Content>
       </Modal>

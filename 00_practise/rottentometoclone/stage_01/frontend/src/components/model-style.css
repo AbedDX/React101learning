@@ -18,3 +18,10 @@
     color: white;
     padding: 1px; 
   }
+
+  
+  .Embed {
+    transform: translate(-50%, -50%);
+    color: rgb(0, 0, 0);
+    cursor: pointer;
+  }

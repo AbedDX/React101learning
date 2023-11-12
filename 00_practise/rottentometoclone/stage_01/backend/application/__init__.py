@@ -58,4 +58,4 @@ from application.routes import movie_route
 #from application.routes import user_route
 
 app.register_blueprint(movie_route.movies_api)
-#app.register_blueprint(user_route.user_api)
+#  app.register_blueprint(user_route.user_api)
