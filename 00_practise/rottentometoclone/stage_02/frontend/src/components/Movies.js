@@ -31,14 +31,14 @@ export const Movies = ({ movies }) => {
   };
 
   return (
-    <Card.Group itemsPerRow={5}>
+    <Card.Group itemsPerRow={5} style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap" }}>
       {movies.map((movie) => (
-        <Card key={movie._id}>
+        <Card key={movie._id} style={{ width: "18%", marginBottom: "20px", borderRadius: "15px" }}>
           <Image
-            src={movie.cloudinary_url || "images/imgholder.jpg"}
+            src={movie.cloudinary_url || "images/imgholder.jpg" }
             className="Banner"
             alt=""
-            style={{ width: "266px", height: "250px" }}
+            style={{width: "100%", height: "250px", cursor: "pointer", borderTopLeftRadius: "30px", borderTopRightRadius: "30px", }}
             onClick={() => openModal(movie)}
           />
           <Card.Content>
@@ -53,17 +53,17 @@ export const Movies = ({ movies }) => {
       ))}
 
       <Modal open={modalOpen} onClose={closeModal} size="small" closeIcon>
-        <Modal.Content >
+        <Modal.Content>
           {youtubeLink && (
-              <Embed
-                id={youtubeLink}
-                source="youtube"
-                style={{backgroundColor: 'black' }}
-                iframe={{
-                  allowFullScreen: true,
-                  autoPlay:true
-                }}
-              />
+            <Embed
+              id={youtubeLink}
+              source="youtube"
+              style={{ backgroundColor: 'black' }}
+              iframe={{
+                allowFullScreen: true,
+                autoPlay: true
+              }}
+            />
           )}
         </Modal.Content>
       </Modal>

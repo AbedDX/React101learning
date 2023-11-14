@@ -1,40 +1,77 @@
-import React, { useState } from "react";
-import { Modal, Button, Form } from "semantic-ui-react";
+import React, { useState, useEffect } from "react";
+import { Modal, Button, Form, Input, Radio } from "semantic-ui-react";
 
-const MovieForm = ({ open, onClose }) => {
+const MovieForm = ({ open, onClose, movieDetails }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [genre, setGenre] = useState("");
   const [releaseDate, setReleaseDate] = useState("");
   const [rating, setRating] = useState("");
   const [youtubeLink, setYoutubeLink] = useState("");
-  const [imageFile, setImageFile] = useState(null);
+  const [selectedImageFile, setSelectedImageFile] = useState(null);
+  const [imageSource, setImageSource] = useState("file"); // 'file' or 'url'
+  const [imageUrl, setImageUrl] = useState("");
+  const [cloudinaryUrl, setCloudinaryUrl] = useState("");
+
+  useEffect(() => {
+    if (movieDetails) {
+      setTitle(movieDetails.title || "");
+      setDescription(movieDetails.description || "");
+      setGenre(movieDetails.genre || "");
+      setReleaseDate(movieDetails.release_date || "");
+      setRating(movieDetails.rating || "");
+      setYoutubeLink(movieDetails.youtube_link || "");
+      setCloudinaryUrl(movieDetails.cloudinary_url || "");
+      // Check if the movieDetails has a valid cloudinary_url or an image_url property
+      if (movieDetails.cloudinary_url) {
+        setImageSource("file");
+      } else if (movieDetails.image_url) {
+        setImageSource("url");
+        setImageUrl(movieDetails.image_url);
+      }
+    } else {
+      setTitle("");
+      setDescription("");
+      setGenre("");
+      setReleaseDate("");
+      setRating("");
+      setYoutubeLink("");
+      setSelectedImageFile(null);
+      setImageSource("file");
+      setImageUrl("");
+      setCloudinaryUrl("");
+    }
+  }, [open, movieDetails]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    setImageFile(file);
+    setSelectedImageFile(file);
   };
 
   const handleSubmit = async () => {
     try {
-      // Upload image to Cloudinary
-      const imageData = new FormData();
-      imageData.append("file", imageFile);
-  
-      // Set the appropriate headers for form data
-      const imageResponse = await fetch("/upload", {
-        method: "POST",
-        body: imageData,
-      });
-  
-      if (!imageResponse.ok) {
-        throw new Error(`Failed to upload image: ${imageResponse.statusText}`);
+      let finalCloudinaryUrl = cloudinaryUrl;
+
+      // If the user selected 'file', upload the file to Cloudinary
+      if (imageSource === "file" && selectedImageFile) {
+        const imageData = new FormData();
+        imageData.append("file", selectedImageFile);
+        const imageResponse = await fetch("/upload", {
+          method: "POST",
+          body: imageData,
+        });
+
+        if (!imageResponse.ok) {
+          throw new Error(`Failed to upload image: ${imageResponse.statusText}`);
+        }
+
+        const imageResult = await imageResponse.json();
+        finalCloudinaryUrl = imageResult.cloudinary_url;
+      } else if (imageSource === "url" && imageUrl) {
+        // Use the provided URL directly
+        finalCloudinaryUrl = imageUrl;
       }
-  
-      const imageResult = await imageResponse.json();
-      const cloudinaryUrl = imageResult.cloudinary_url;
-  
-      // Perform the form submission logic, including API calls to add the movie to the database
+
       const movieData = {
         title,
         description,
@@ -42,27 +79,27 @@ const MovieForm = ({ open, onClose }) => {
         release_date: releaseDate,
         rating,
         youtube_link: youtubeLink,
-        cloudinary_url: cloudinaryUrl,
+        cloudinary_url: finalCloudinaryUrl,
       };
-  
-      // Send the movie data to your backend
-      const response = await fetch("/movies", {
-        method: "POST",
+
+      const apiUrl = movieDetails ? `/movies/${movieDetails._id}` : "/movies";
+      const method = movieDetails ? "PUT" : "POST";
+
+      const response = await fetch(apiUrl, {
+        method,
         headers: {
-          "Content-Type": "application/json", // Set the appropriate content type
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(movieData),
       });
-  
+
       if (!response.ok) {
-        throw new Error(`Failed to add movie: ${response.statusText}`);
+        throw new Error(`Failed to ${movieDetails ? "update" : "add"} movie: ${response.statusText}`);
       }
-  
-      // After successful submission, close the modal
+
       onClose();
     } catch (error) {
       console.error(error);
-      // Handle errors, maybe show an error message to the user
     }
   };
   
@@ -107,16 +144,45 @@ const MovieForm = ({ open, onClose }) => {
             value={youtubeLink}
             onChange={(e) => setYoutubeLink(e.target.value)}
           />
-          <Form.Input
-            type="file"
-            label="Image Banner"
-            onChange={handleImageChange}
-          />
+          <Form.Field>
+            <label>Image Source</label>
+            <Radio
+              label="File"
+              name="imageSource"
+              value="file"
+              checked={imageSource === "file"}
+              onChange={() => setImageSource("file")}
+            />
+            <Radio
+              label="URL"
+              name="imageSource"
+              value="url"
+              checked={imageSource === "url"}
+              onChange={() => setImageSource("url")}
+            />
+          </Form.Field>
+          {imageSource === "file" && (
+            <Form.Input
+              type="file"
+              label="Image Banner"
+              onChange={handleImageChange}
+            />
+          )}
+
+          {imageSource === "url" && (
+            <Form.Field
+              control={Input}
+              label="Image URL"
+              placeholder="Enter image URL"
+              value={imageUrl}
+              onChange={(e) => setImageUrl(e.target.value)}
+            />
+          )}
         </Form>
       </Modal.Content>
       <Modal.Actions>
         <Button primary onClick={handleSubmit}>
-          Add Movie 🍅
+          {movieDetails ? "Update" : "Add"} Movie 🍅
         </Button>
         <Button onClick={onClose}>Cancel</Button>
       </Modal.Actions>

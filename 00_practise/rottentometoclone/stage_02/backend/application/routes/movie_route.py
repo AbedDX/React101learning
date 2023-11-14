@@ -98,19 +98,32 @@ def get_movie_youtube_link(movies_id):
     return jsonify({"youtube_link": youtube_link})
 
 # Endpoint to handle Cloudinary upload
+# ... (other imports and configurations)
+
 @movies_api.route("/upload", methods=["POST"])
 def upload_image():
     try:
-        file = request.files["file"]
-
-        if not file:
+        # Check if the request contains a file
+        if "file" not in request.files:
             return jsonify({"error": "No file provided"}), 400
 
-        upload_result = upload(file)
+        file = request.files["file"]
 
+        # If the user does not select a file, the browser submits an empty file without a filename
+        if file.filename == '':
+            return jsonify({"error": "No file selected"}), 400
+
+        folder = "movie_img/"  # Specify the folder name
+        # Upload the file to Cloudinary with the specified folder
+        upload_result = upload(file, folder=folder)
+
+        # Check if the upload was successful
         if "secure_url" not in upload_result:
             return jsonify({"error": "Failed to upload image"}), 500
 
+        # Return the Cloudinary URL
         return jsonify({"cloudinary_url": upload_result["secure_url"]})
+
     except Exception as e:
+        # Handle any other exceptions that might occur during the upload
         return jsonify({"error": str(e)}), 500

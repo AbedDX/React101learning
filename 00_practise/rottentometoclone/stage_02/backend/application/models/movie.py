@@ -4,7 +4,7 @@ from bson import ObjectId
 from datetime import datetime
 
 class Movie:
-    def __init__(self, title, description, genre, release_date, rating, youtube_link, cloudinary_url):
+    def __init__(self, title, description, genre, release_date, rating, youtube_link, cloudinary_url=None, image_file=None):
         self.title = title
         self.description = description
         self.genre = genre
@@ -12,10 +12,11 @@ class Movie:
         self.rating = rating
         self.youtube_link = youtube_link
         self.cloudinary_url = cloudinary_url
+        self.image_file = image_file
         self.created_at = datetime.utcnow()
         self.updated_at = datetime.utcnow()
 
-    def save(self, image_file):
+    def save(self):
         movie_data = {
             "title": self.title,
             "description": self.description,
@@ -27,16 +28,16 @@ class Movie:
             "created_at": self.created_at,
             "updated_at": self.updated_at
         }
-        result = mongodb.db.movies.insert_one(movie_data)
-        # Upload the image to Cloudinary and update the Cloudinary URL
-        if image_file:
-            cloudinary_response = upload(image_file)
+
+        if self.image_file:
+            cloudinary_response = upload(self.image_file)
             cloudinary_url = cloudinary_response['secure_url']
             movie_data['cloudinary_url'] = cloudinary_url
-            # Update the movie document with the Cloudinary URL
-            mongodb.db.movies.update_one({"_id": result.inserted_id}, {"$set": {"cloudinary_url": cloudinary_url}})
+
+        result = mongodb.db.movies.insert_one(movie_data)
 
         return str(result.inserted_id)
+
 
     @staticmethod
     def get_all_movies():
