@@ -24,21 +24,19 @@ Make sure you have the following installed on your machine:
 
 Make sure you have Node.js and npm installed on your machine.
 
-## How to Start
+How to Start
+Backend
+Navigate to the backend directory.
 
-### Backend
+Install the required dependencies:
 
-1. Navigate to the `backend` directory.
-2. Install the required dependencies:
-
-   ```bash
-   pip install -r requirements.txt
+bash
+pip install -r requirements.txt
 Set up environment variables by creating a .env file in the backend directory. Configure variables like FLASK_APP, FLASK_ENV, MONGO_URI, and CLOUDINARY_URL.
 
 Run the Flask application:
 
 bash
-Copy code
 flask run
 Frontend
 Navigate to the frontend directory.
@@ -46,22 +44,18 @@ Navigate to the frontend directory.
 Install the required dependencies:
 
 bash
-Copy code
 npm install
 Start the React application:
 
 bash
-Copy code
 npm start
 Visit http://localhost:3000 in your web browser to explore the movie collection and use the application.
-
-Notes
 
 Future Improvements
 This project is an ongoing endeavor, and there are several areas for improvement:
 
 - Complete user authentication for login and signup.
-- 
+- UI style improvement
 
 
 
