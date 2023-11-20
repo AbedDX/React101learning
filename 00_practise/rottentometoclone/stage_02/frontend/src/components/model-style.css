@@ -9,7 +9,7 @@
   
   /* Set the background color of the modal header to black */
   .ui.modal .header {
-    background-color: rgb(0, 0, 0);
+    background-color: rgba(0, 0, 0, 0);
 
     color: rgba(0, 0, 0, 0); /* Set text color to white for better readability */
     padding: 1px;
