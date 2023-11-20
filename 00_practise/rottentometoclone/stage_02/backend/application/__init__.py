@@ -1,9 +1,10 @@
-from flask import Flask, Blueprint, jsonify
+from flask import Flask
 from flask_pymongo import PyMongo
 from flask_cors import CORS
 from dotenv import load_dotenv
+from flask_bcrypt import Bcrypt  # Import the Bcrypt class
+
 import cloudinary
-import cloudinary.api
 import os
 
 app = Flask(__name__)
@@ -12,7 +13,9 @@ load_dotenv()
 
 # Initialize MongoDB
 MONGO_URI = os.getenv("MONGO_URI")
+SECRET_KEY = os.getenv("SECRET_KEY")
 app.config["MONGO_URI"] = MONGO_URI
+app.config["SECRET_KEY"] = SECRET_KEY 
 
 # Initialize Cloudinary
 CLOUD_NAME = os.getenv("CLOUD_NAME")
@@ -24,13 +27,15 @@ if not all([CLOUD_NAME, CLOUD_API_KEY, CLOUD_API_SECRET]):
     print("Cloudinary configuration is missing. Please check your environment variables.")
 else:
     # Configure Cloudinary
-    import cloudinary
     cloudinary.config(
         cloud_name=CLOUD_NAME,
         api_key=CLOUD_API_KEY,
         api_secret=CLOUD_API_SECRET,
     )
     print("Cloudinary configuration successful.")
+
+# Initialize Bcrypt
+bcrypt = Bcrypt(app)
 
 # Initialize CORS
 CORS(app)
@@ -56,7 +61,7 @@ else:
 
 # Import and register your blueprints
 from application.routes import movie_route
-#from application.routes import user_route
+from application.routes import user_route
 
 app.register_blueprint(movie_route.movies_api)
-#  app.register_blueprint(user_route.user_api)
+app.register_blueprint(user_route.user_api)

@@ -3,4 +3,5 @@ Flask-CORS
 Flask-PyMongo
 python-dotenv
 cloudinary
+flask_bcrypt
 

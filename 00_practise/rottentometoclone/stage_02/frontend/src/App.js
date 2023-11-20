@@ -31,12 +31,15 @@ function App() {
   return (
     <div>
       <Navbar/>
-    <Container style={{ marginTop: "20px" }}>
+    <Container style={{ marginTop: "20px" }} tyle={{marginLeft: "10px" }}>
     <Button primary onClick={openModal}>
         Open Movie Form
       </Button>
+      <br/>
       <MovieForm open={isModalOpen} onClose={closeModal} />
+      <br/>
       <Movies movies={movies} />
+
     </Container>
     </div>
   );

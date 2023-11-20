@@ -61,7 +61,7 @@ export const Movies = ({ movies }) => {
               style={{ backgroundColor: 'black' }}
               iframe={{
                 allowFullScreen: true,
-                autoPlay: true
+                
               }}
             />
           )}
